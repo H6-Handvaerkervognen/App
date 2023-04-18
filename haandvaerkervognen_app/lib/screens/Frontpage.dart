@@ -46,13 +46,11 @@ class _FrontpageState extends State<Frontpage> {
 
   void goToSettings() {
     Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const SettingsPage())));
+            MaterialPageRoute(builder: ((context) => const SettingsPage())))
+        .then((value) => tryAddAlarm(value));
   }
 
-  someFutureFunctionReturningString() {
-    showDialog(
-      context: context,
-      builder: (context) => BluetoothPopup(),
-    );
-  }
+  someFutureFunctionReturningString() {}
+
+  tryAddAlarm(value) {}
 }

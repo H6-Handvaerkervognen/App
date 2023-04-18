@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:haandvaerkervognen_app/screens/Loginpage.dart';
 import 'package:haandvaerkervognen_app/screens/frontPage.dart';
 
 void main() {
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blueGrey,
       ),
-      home: const Frontpage(),
+      home: const Loginpage(),
     );
   }
 }

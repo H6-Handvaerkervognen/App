@@ -10,8 +10,8 @@ class BluetoothPairButton extends StatelessWidget {
       onPressed: startBlueTooth,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[700],
-        minimumSize: const Size(250, 75),
-        maximumSize: const Size(275, 80),
+        minimumSize: const Size(200, 55),
+        maximumSize: const Size(275, 60),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
@@ -20,7 +20,7 @@ class BluetoothPairButton extends StatelessWidget {
         children: const [
           Icon(Icons.bluetooth, size: 40),
           Spacer(flex: 1),
-          Text('Par', style: TextStyle(fontSize: 30)),
+          Text('Par en alarm', style: TextStyle(fontSize: 30)),
           Spacer(flex: 2),
         ],
       ),

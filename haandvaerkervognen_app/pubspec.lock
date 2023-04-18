@@ -75,6 +75,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.0"
   js:
     dependency: transitive
     description:
@@ -176,6 +184,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.16"
+  time_picker_spinner_pop_up:
+    dependency: "direct main"
+    description:
+      name: time_picker_spinner_pop_up
+      sha256: "5f6c46839140f048e9fc7114422302ca5e8b088879d9945790461f79c273b2a5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   vector_math:
     dependency: transitive
     description:
@@ -186,3 +202,4 @@ packages:
     version: "2.1.4"
 sdks:
   dart: ">=2.19.4 <3.0.0"
+  flutter: ">=1.17.0"
