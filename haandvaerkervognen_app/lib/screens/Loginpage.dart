@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:haandvaerkervognen_app/Services/HttpService.dart';
+import 'package:haandvaerkervognen_app/services/HttpService.dart';
 import 'package:haandvaerkervognen_app/screens/Frontpage.dart';
-import 'package:haandvaerkervognen_app/screens/Settingspage.dart';
+import 'package:haandvaerkervognen_app/screens/RegisterPage.dart';
+import 'package:haandvaerkervognen_app/screens/AlarmSettingsPage.dart';
 
 class Loginpage extends StatefulWidget {
   const Loginpage({super.key});
@@ -25,12 +26,13 @@ class _LoginpageState extends State<Loginpage> {
           child: Form(
         key: _formKey,
         child: SizedBox(
-          height: 250,
-          width: 300,
+          height: 350,
+          width: 350,
           child: Column(
             children: [
+              //Padding for username input field
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   controller: usernameController,
                   decoration: InputDecoration(
@@ -53,6 +55,7 @@ class _LoginpageState extends State<Loginpage> {
                   textInputAction: TextInputAction.done,
                 ),
               ),
+              //Padding for password input field
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -60,7 +63,7 @@ class _LoginpageState extends State<Loginpage> {
                   decoration: InputDecoration(
                     hintText: 'Indtast kodeord',
                     labelText: 'kodeord',
-                    prefixIcon: const Icon(Icons.person),
+                    prefixIcon: const Icon(Icons.lock_open),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => passwordController.clear(),
@@ -73,10 +76,14 @@ class _LoginpageState extends State<Loginpage> {
                     }
                     return null;
                   },
-                  keyboardType: TextInputType.visiblePassword,
+                  obscureText: true,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.done,
                 ),
               ),
+              //Login button
               ElevatedButton(
                 onPressed: () async {
                   // Validate returns true if the form is valid, or false otherwise.
@@ -88,9 +95,10 @@ class _LoginpageState extends State<Loginpage> {
                 },
                 child: const Text('Login'),
               ),
+              //Go to register page
               ElevatedButton(
                 onPressed: () async {
-                  goToSettings();
+                  goToRegister();
                 },
                 child: const Text('Registrer'),
               ),
@@ -108,8 +116,8 @@ class _LoginpageState extends State<Loginpage> {
             builder: (BuildContext context) => const Frontpage()));
   }
 
-  void goToSettings() {
+  void goToRegister() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const SettingsPage()));
+        context, MaterialPageRoute(builder: (context) => const RegisterPage()));
   }
 }

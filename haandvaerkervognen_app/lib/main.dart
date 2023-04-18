@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:haandvaerkervognen_app/screens/Loginpage.dart';
-import 'package:haandvaerkervognen_app/screens/frontPage.dart';
 
 void main() {
   runApp(const MyApp());

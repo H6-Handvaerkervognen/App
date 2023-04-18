@@ -1,19 +1,18 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+class AlarmSettingsPage extends StatefulWidget {
+  const AlarmSettingsPage({super.key, required this.alarm});
+
+  final Alarm alarm;
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  State<AlarmSettingsPage> createState() => _AlarmSettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
   TimeOfDay startTime = const TimeOfDay(hour: 12, minute: 15);
   TimeOfDay endTime = const TimeOfDay(hour: 15, minute: 30);
   final startTimeController = TimePickerSpinnerController();
@@ -23,7 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SettingsPage'),
+        title: Text('SettingsPage: - ${widget.alarm.name}'),
       ),
       body: Center(
           child: Column(
@@ -31,12 +30,12 @@ class _SettingsPageState extends State<SettingsPage> {
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
-              'Alarm id',
+              'Alarm navn',
               style: TextStyle(fontSize: 32),
             ),
           ),
           const SizedBox(
-            height: 150,
+            height: 80,
           ),
           Center(
             child: Padding(
