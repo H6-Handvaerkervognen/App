@@ -27,7 +27,12 @@ class _FrontpageState extends State<Frontpage> {
               //Generate elements
               List<Alarm> alarms = snapshot.data as List<Alarm>;
               if (alarms.isEmpty) {
-                return const Center(child: BluetoothPairButton());
+                return const Center(
+                    child: BluetoothPairButton(
+                        minWidth: 200,
+                        minHeight: 55,
+                        maxWidth: 275,
+                        maxHeight: 60));
               }
               return Center(
                 child: Column(
@@ -42,15 +47,11 @@ class _FrontpageState extends State<Frontpage> {
                       ),
                     ),
                     const Spacer(),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[700],
-                            minimumSize: const Size(180, 40),
-                            maximumSize: const Size(190, 50),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15))),
-                        onPressed: searchForBtDevices,
-                        child: const Text('Par ny alarm'))
+                    const BluetoothPairButton(
+                        minWidth: 180,
+                        minHeight: 40,
+                        maxWidth: 190,
+                        maxHeight: 50)
                   ],
                 ),
               );
