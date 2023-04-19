@@ -27,7 +27,7 @@ class _FrontpageState extends State<Frontpage> {
               //Generate elements
               List<Alarm> alarms = snapshot.data as List<Alarm>;
               if (alarms.isEmpty) {
-                return const Center(
+                return Center(
                     child: BluetoothPairButton(
                         minWidth: 200,
                         minHeight: 55,
@@ -47,10 +47,10 @@ class _FrontpageState extends State<Frontpage> {
                       ),
                     ),
                     const Spacer(),
-                    const BluetoothPairButton(
-                        minWidth: 180,
+                    BluetoothPairButton(
+                        minWidth: 220,
                         minHeight: 40,
-                        maxWidth: 190,
+                        maxWidth: 260,
                         maxHeight: 50)
                   ],
                 ),
@@ -76,7 +76,7 @@ class _FrontpageState extends State<Frontpage> {
           name: 'Jespers bil')
     ];
 
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(milliseconds: 2));
     return alarms;
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:haandvaerkervognen_app/screens/Frontpage.dart';
 import 'package:haandvaerkervognen_app/screens/Loginpage.dart';
+import 'package:haandvaerkervognen_app/screens/RegisterPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,6 +16,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Haandvaerkernes Alarm',
+      routes: {
+        'registerPage': (context) => const RegisterPage(),
+        'frontPage': (context) => const Frontpage(),
+      },
       theme: ThemeData(
         // This is the theme of your application.
         //
