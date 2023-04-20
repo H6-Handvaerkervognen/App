@@ -11,6 +11,8 @@ class Frontpage extends StatefulWidget {
 }
 
 class _FrontpageState extends State<Frontpage> {
+  late List<Alarm> alarms;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +27,8 @@ class _FrontpageState extends State<Frontpage> {
             }
             if (snapshot.hasData) {
               //Generate elements
-              List<Alarm> alarms = snapshot.data as List<Alarm>;
+              List<Alarm> fetchedAlarms = snapshot.data as List<Alarm>;
+              alarms = fetchedAlarms;
               if (alarms.isEmpty) {
                 return Center(
                     child: BluetoothPairButton(
@@ -37,12 +40,30 @@ class _FrontpageState extends State<Frontpage> {
               return Center(
                 child: Column(
                   children: [
-                    Column(
-                      children: List.generate(
-                        alarms.length,
-                        (index) => ElevatedButton(
-                          onPressed: () => goToAlarmSettings(alarms[index]),
-                          child: Text(alarms[index].iD),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: List.generate(
+                          alarms.length,
+                          (index) => Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal:
+                                      0.15 * MediaQuery.of(context).size.width),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () =>
+                                          goToAlarmSettings(alarms[index]),
+                                      child: Text(alarms[index].iD),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -63,7 +84,7 @@ class _FrontpageState extends State<Frontpage> {
   }
 
   Future<List<Alarm>> someFutureFunctionReturningString() async {
-    List<Alarm> alarms = [
+    List<Alarm> testAlarms = [
       Alarm(
           iD: 'isda1',
           startTime: TimeOfDay.now(),
@@ -73,11 +94,11 @@ class _FrontpageState extends State<Frontpage> {
           iD: 'Alarm 2',
           startTime: TimeOfDay.now(),
           endTime: TimeOfDay.now(),
-          name: 'Jespers bil')
+          name: 'Jespers bil'),
     ];
 
     await Future.delayed(Duration(milliseconds: 2));
-    return alarms;
+    return testAlarms;
   }
 
   //tryAddAlarm(value) {}

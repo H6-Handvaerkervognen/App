@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:haandvaerkervognen_app/models/Alarm.dart';
+import 'package:haandvaerkervognen_app/services/HttpService.dart';
+import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
 class BluetoothPairButton extends StatefulWidget {
   BluetoothPairButton(
@@ -11,27 +14,40 @@ class BluetoothPairButton extends StatefulWidget {
       required this.minHeight,
       required this.maxWidth,
       required this.maxHeight});
+
   final double minWidth;
   final double maxWidth;
   final double minHeight;
   final double maxHeight;
+
+  final nameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final startTimeController = TimePickerSpinnerController();
+  final endTimeController = TimePickerSpinnerController();
 
   @override
   State<BluetoothPairButton> createState() => _BluetoothPairButtonState();
 }
 
 class _BluetoothPairButtonState extends State<BluetoothPairButton> {
-  final passwordController = TextEditingController();
-
-  late BluetoothConnection connection;
+  TimeOfDay startTime = const TimeOfDay(hour: 12, minute: 0);
+  TimeOfDay endTime = const TimeOfDay(hour: 12, minute: 0);
   bool isBonded = false;
   bool isScanning = false;
+
+  late BluetoothConnection connection;
   late List<String> strings;
+  late HttpService http;
+  late Alarm newAlarm;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: isScanning ? null : () => startBlueTooth(),
+      onPressed: () {
+        setState(() {
+          isScanning ? null : () => startBlueTooth();
+        });
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[700],
         minimumSize: Size(widget.minWidth, widget.minHeight),
@@ -128,7 +144,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Opret ny alarm'),
+            title: const Text('Opret ny alarm'),
             actionsAlignment: MainAxisAlignment.center,
             actions: [
               Column(
@@ -136,7 +152,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
                   SizedBox(
                     width: 100,
                     child: TextFormField(
-                      decoration: InputDecoration(hintText: 'Alarm navn'),
+                      decoration: const InputDecoration(hintText: 'Alarm navn'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Angiv venligst et Alarm navn';
@@ -148,8 +164,8 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
                   SizedBox(
                     width: 100,
                     child: TextFormField(
-                      controller: passwordController,
-                      decoration: InputDecoration(hintText: 'Kodeord'),
+                      controller: widget.passwordController,
+                      decoration: const InputDecoration(hintText: 'Kodeord'),
                       autocorrect: false,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -159,15 +175,54 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
                       },
                     ),
                   ),
+                  const Text('Alarm tider'),
+                  Row(
+                    children: const [Text('Start'), Text('Slut')],
+                  ),
+                  Row(
+                    children: [
+                      TimePickerSpinnerPopUp(
+                        initTime: DateTime.now(),
+                      ),
+                      TimePickerSpinnerPopUp(
+                        controller: widget.startTimeController,
+                        initTime: DateTime.now(),
+                        barrierColor:
+                            Colors.black12, //Barrier Color when pop up show
+                        onChange: (dateTime) {
+                          // Implement your logic with select dateTime
+                          startTime = TimeOfDay.fromDateTime(dateTime);
+                        },
+                      ),
+                      TimePickerSpinnerPopUp(
+                        controller: widget.endTimeController,
+                        initTime: DateTime.now(),
+                        barrierColor:
+                            Colors.black12, //Barrier Color when pop up show
+                        onChange: (dateTime) {
+                          endTime = TimeOfDay.fromDateTime(dateTime);
+                        },
+                      ),
+                    ],
+                  ),
                   ElevatedButton(
                       onPressed: () async {
                         try {
-                          connection.output.add(Uint8List.fromList(
-                              utf8.encode("${passwordController.text}\r\n")));
+                          connection.output.add(Uint8List.fromList(utf8.encode(
+                              "${widget.passwordController.text}\r\n")));
                           await connection.output.done;
                           if (alarmData.isNotEmpty && alarmData.contains('!')) {
                             print('$alarmData');
                             //create DTO and pop to main page
+                            http = HttpService();
+                            http.savePairing(
+                                'GetAppID',
+                                Alarm(
+                                    iD: alarmAddress,
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    name: widget.nameController.text));
+
                             FlutterBluetoothSerial.instance
                                 .removeDeviceBondWithAddress(alarmAddress);
                             Navigator.pop(context);

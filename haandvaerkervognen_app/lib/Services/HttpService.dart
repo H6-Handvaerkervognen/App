@@ -1,6 +1,10 @@
-/* class HttpService {
+import 'dart:ffi';
+
+import 'package:haandvaerkervognen_app/models/Alarm.dart';
+
+class HttpService {
   Future<bool> login(String userName) async {
-    var headers = {
+    /*  var headers = {
       'Content-Type': 'application/json',
     };
     var request =
@@ -18,7 +22,11 @@
     } else {
       print(response2.reasonPhrase);
       return false;
-    }
+    } */
+    return true;
+  }
+
+  Future<bool> savePairing(String appId, Alarm alarmInfo) async {
+    return true;
   }
 }
- */
