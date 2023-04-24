@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:haandvaerkervognen_app/services/HttpService.dart';
 
+///Page for creating a new user
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  const RegisterPage({super.key, required this.http});
+
+  final HttpService http;
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -118,10 +124,16 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void registerUser() {
+  ///Method for creating a new user that you can log in with
+  Future<void> registerUser() async {
     if (_formKey.currentState!.validate()) {
       //Send register request
-      if (true) {
+      bool res = await widget.http
+          .registerUser(usernameController.text, passwordController.text);
+
+      //Show snackbar in another method
+
+      if (res) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${usernameController.text} er blevet registeret!'),

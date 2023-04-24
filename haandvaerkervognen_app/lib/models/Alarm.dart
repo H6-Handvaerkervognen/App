@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+///Model for the physical alarm
 class Alarm {
   Alarm(
       {required this.iD,
@@ -11,6 +12,7 @@ class Alarm {
   late TimeOfDay endTime;
   late String name;
 
+//Factory method for when you need to convert from json, into the alarm object
   factory Alarm.fromJson(Map<String, dynamic> json) {
     return Alarm(
         iD: json['alarmId'],

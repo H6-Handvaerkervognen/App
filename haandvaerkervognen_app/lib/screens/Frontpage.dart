@@ -8,6 +8,9 @@ import 'package:haandvaerkervognen_app/screens/AlarmSettingsPage.dart';
 import 'package:haandvaerkervognen_app/services/HttpService.dart';
 import 'package:haandvaerkervognen_app/widgets/BluetoothPairButton.dart';
 
+///Page that has overview of every alarm currently connected.
+///Ability to pair more with bluetooth or navigate to each alarm's page.
+///Also able to logout from here
 class Frontpage extends StatefulWidget {
   const Frontpage({super.key, required this.http});
 
@@ -23,28 +26,17 @@ class _FrontpageState extends State<Frontpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 2, 16),
-        child: FloatingActionButton(
-            onPressed: logOut,
-            splashColor: Colors.blue[300],
-            backgroundColor: Colors.blue,
-            child: const Icon(
-              Icons.logout_outlined,
-            )),
-      ),
       appBar: AppBar(
         title: const Text('Titel', style: TextStyle(fontSize: 30)),
       ),
       body: FutureBuilder<List<Alarm>>(
+        //If the () are there, the method is run immediately
         future: getAlarms(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             Text('There was an error ${snapshot.error}');
           }
           if (snapshot.hasData) {
-            //Generate elements
             List<Alarm> fetchedAlarms = snapshot.data as List<Alarm>;
             alarms = fetchedAlarms;
             if (alarms.isEmpty) {
@@ -62,6 +54,7 @@ class _FrontpageState extends State<Frontpage> {
                   SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: Column(
+                      //Generate elements from the snapshot
                       children: List.generate(
                         alarms.length,
                         (index) => Padding(
@@ -100,9 +93,23 @@ class _FrontpageState extends State<Frontpage> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
+      //Floating logout button
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 2, 16),
+        child: FloatingActionButton(
+          onPressed: logOut,
+          splashColor: Colors.blue[300],
+          backgroundColor: Colors.blue,
+          child: const Icon(
+            Icons.logout_outlined,
+          ),
+        ),
+      ),
     );
   }
 
+  ///Fetches alarms from the api related to this user
   Future<List<Alarm>> getAlarms() async {
     List<Alarm> testAlarms = [
       Alarm(
@@ -116,7 +123,9 @@ class _FrontpageState extends State<Frontpage> {
           endTime: TimeOfDay.now(),
           name: 'Jespers bil'),
     ];
-    List<Alarm> alarms = await widget.http.getAlarms();
+
+    //Add username
+    List<Alarm> alarms = await widget.http.getAlarms('');
 
     if (alarms.isNotEmpty) {
       subscribeToAlarms(alarms);
@@ -124,15 +133,15 @@ class _FrontpageState extends State<Frontpage> {
     }
 
     FirebaseMessaging.instance.subscribeToTopic('Test');
-    await Future.delayed(const Duration(milliseconds: 2));
     return testAlarms;
   }
 
-  //Logout method
+  ///Logout method
   void logOut() async {
-    print(await FirebaseMessaging.instance.getToken());
+    Navigator.popUntil(context, (route) => route == '/');
   }
 
+  ///Navigates to a specified alarm
   goToAlarmPage(Alarm alarm) {
     Navigator.push(
         context,
@@ -143,6 +152,7 @@ class _FrontpageState extends State<Frontpage> {
                 )));
   }
 
+  ///Loops through all alarms and subscribes to their unique topics
   void subscribeToAlarms(List<Alarm> alarms) {
     for (int i = 0; i < alarms.length; i++) {
       print('Subscribed to topic: ${alarms[i].iD}');

@@ -1,18 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
+import 'package:haandvaerkervognen_app/services/HttpService.dart';
 import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
+///Page for changing settings concerning the alarm.
 class AlarmSettingsPage extends StatefulWidget {
-  const AlarmSettingsPage({super.key, required this.alarm});
+  AlarmSettingsPage({super.key, required this.alarm, required this.http});
 
   final Alarm alarm;
+  final HttpService http;
+  bool valueChanged = false;
 
   @override
   State<AlarmSettingsPage> createState() => _AlarmSettingsPageState();
 }
 
 class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
+  //Variables to control the TimePickerSpinner
   TimeOfDay startTime = const TimeOfDay(hour: 12, minute: 15);
   TimeOfDay endTime = const TimeOfDay(hour: 15, minute: 30);
   final startTimeController = TimePickerSpinnerController();
@@ -22,7 +27,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SettingsPage: - ${widget.alarm.name}'),
+        title: Center(child: Text('SettingsPage - ${widget.alarm.name}')),
       ),
       body: Center(
           child: Column(
@@ -56,8 +61,8 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                         barrierColor:
                             Colors.black12, //Barrier Color when pop up show
                         onChange: (dateTime) {
-                          // Implement your logic with select dateTime
                           startTime = TimeOfDay.fromDateTime(dateTime);
+                          widget.valueChanged = true;
                         },
                       ),
                     ],
@@ -78,6 +83,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                           // Implement your logic with select dateTime
                           setState(() {
                             endTime = TimeOfDay.fromDateTime(dateTime);
+                            widget.valueChanged = true;
                           });
                         },
                       ),
@@ -87,14 +93,24 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
               ),
             ),
           ),
-          Spacer(),
-          ElevatedButton(onPressed: saveChanges, child: const Text('Gem'))
+          const Spacer(),
+          ElevatedButton(
+              onPressed: widget.valueChanged ? saveChanges : null,
+              child: const Text('Gem'))
         ],
       )),
     );
   }
 
+  ///Saves the startTime and endTime by making a patch request to the Api
   void saveChanges() {
-    //Save startTime and endTime
+    setState(() async {
+      widget.alarm.startTime = startTime;
+      widget.alarm.endTime = endTime;
+
+      bool response = await widget.http.saveAlarmTimes(widget.alarm);
+      widget.valueChanged = false;
+      //Show snackbar with result
+    });
   }
 }

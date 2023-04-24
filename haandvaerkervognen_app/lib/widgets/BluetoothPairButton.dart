@@ -36,6 +36,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
   TimeOfDay endTime = const TimeOfDay(hour: 12, minute: 0);
   bool isBonded = false;
   bool isScanning = false;
+  late String alarmData = '';
 
   late BluetoothConnection connection;
   late List<String> strings;
@@ -208,44 +209,16 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
                     ],
                   ),
                   ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          connection.output.add(Uint8List.fromList(utf8.encode(
-                              "${widget.passwordController.text}\r\n")));
-                          await connection.output.done;
-                          if (alarmData.isNotEmpty && alarmData.contains('!')) {
-                            print('$alarmData');
-                            //create DTO and pop to main page
-                            http = HttpService();
-                            http.savePairing(
-                                'GetAppID',
-                                Alarm(
-                                    iD: alarmAddress,
-                                    startTime: startTime,
-                                    endTime: endTime,
-                                    name: widget.nameController.text));
-
-                            FlutterBluetoothSerial.instance
-                                .removeDeviceBondWithAddress(alarmAddress);
-                            Navigator.pop(context);
-                          }
-                        } catch (e) {
-                          print(e);
-                        } finally {
-                          connection.close();
-                        }
-                      },
+                      onPressed: () => sendpairInfo(alarmAddress),
                       child: const Text('Forbind')),
                 ],
               )
             ],
           );
         },
-      );
+      ).then((value) => Navigator.pop(context));
     }
   }
-
-  late String alarmData = '';
 
   void _onDataReceived(Uint8List data) {
     print(ascii.decode(data));
@@ -259,5 +232,32 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
 
   handleError() {
     connection.close();
+  }
+
+  sendpairInfo(String alarmAddress) async {
+    try {
+      connection.output.add(Uint8List.fromList(
+          utf8.encode("${widget.passwordController.text}\r\n")));
+      await connection.output.done;
+      if (alarmData.isNotEmpty && alarmData.contains('!')) {
+        print('$alarmData');
+        //create DTO and pop to main page
+        http = HttpService();
+        http.savePairing(
+            'GetAppID',
+            Alarm(
+                iD: alarmAddress,
+                startTime: startTime,
+                endTime: endTime,
+                name: widget.nameController.text));
+
+        FlutterBluetoothSerial.instance
+            .removeDeviceBondWithAddress(alarmAddress);
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      connection.close();
+    }
   }
 }
