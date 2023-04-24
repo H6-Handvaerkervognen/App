@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:haandvaerkervognen_app/screens/AlarmPage.dart';
@@ -116,16 +117,21 @@ class _FrontpageState extends State<Frontpage> {
           name: 'Jespers bil'),
     ];
     List<Alarm> alarms = await widget.http.getAlarms();
-    if (alarms.isEmpty) {
-      return testAlarms;
+
+    if (alarms.isNotEmpty) {
+      subscribeToAlarms(alarms);
+      return alarms;
     }
 
+    FirebaseMessaging.instance.subscribeToTopic('Test');
     await Future.delayed(const Duration(milliseconds: 2));
-    return alarms;
+    return testAlarms;
   }
 
   //Logout method
-  void logOut() {}
+  void logOut() async {
+    print(await FirebaseMessaging.instance.getToken());
+  }
 
   goToAlarmPage(Alarm alarm) {
     Navigator.push(
@@ -135,5 +141,12 @@ class _FrontpageState extends State<Frontpage> {
                   http: widget.http,
                   alarm: alarm,
                 )));
+  }
+
+  void subscribeToAlarms(List<Alarm> alarms) {
+    for (int i = 0; i < alarms.length; i++) {
+      print('Subscribed to topic: ${alarms[i].iD}');
+      FirebaseMessaging.instance.subscribeToTopic(alarms[i].iD);
+    }
   }
 }

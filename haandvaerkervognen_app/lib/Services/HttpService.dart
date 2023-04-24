@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 
@@ -5,11 +6,11 @@ import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:http/http.dart' as http;
 
 class HttpService {
-  final String baseUrl = 'BaseUrl';
-  late http.Response response;
+  final String baseUrl = 'https://192.168.1.1/api';
+  late http.Response request;
 
   Future<bool> login(String userName, String password) async {
-    response = await http.post(Uri.parse('$baseUrl/login'),
+    request = await http.post(Uri.parse('$baseUrl/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -18,14 +19,14 @@ class HttpService {
           'password': password,
         }));
 
-    if (response.statusCode == 200) {
+    if (request.statusCode == 200) {
       return true;
     }
     return false;
   }
 
   Future<bool> savePairing(String appId, Alarm alarmInfo) async {
-    response = await http.post(Uri.parse('$baseUrl/savePairing'),
+    request = await http.post(Uri.parse('$baseUrl/savePairing'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -34,7 +35,7 @@ class HttpService {
           'alarmInfo': alarmInfo,
         }));
 
-    if (response.statusCode == 201) {
+    if (request.statusCode == 201) {
       return true;
     } else {
       return false;
@@ -42,22 +43,28 @@ class HttpService {
   }
 
   Future<List<Alarm>> getAlarms() async {
-    response = await http.get(Uri.parse('$baseUrl/alarms'));
+    try {
+      request = await http.get(Uri.parse('$baseUrl/alarms')).timeout(
+            const Duration(seconds: 2),
+          );
 
-    if (response.statusCode == 200) {
-      Iterable alarms = jsonDecode(response.body);
+      if (request.statusCode == 200) {
+        Iterable alarms = jsonDecode(request.body);
 
-      return List<Alarm>.from(alarms.map((alarm) => Alarm.fromJson(alarm)));
-    } else {
+        return List<Alarm>.from(alarms.map((alarm) => Alarm.fromJson(alarm)));
+      } else {
+        return List.empty();
+      }
+    } on TimeoutException catch (e) {
       return List.empty();
     }
   }
 
   stopAlarm(String alarmId) async {
-    response = await http.get(Uri.parse('$baseUrl/stop'));
+    request = await http.get(Uri.parse('$baseUrl/stop'));
 
-    if (response.statusCode == 200) {
-      Iterable alarms = jsonDecode(response.body);
+    if (request.statusCode == 200) {
+      Iterable alarms = jsonDecode(request.body);
 
       return List<Alarm>.from(alarms.map((alarm) => Alarm.fromJson(alarm)));
     } else {
@@ -66,7 +73,7 @@ class HttpService {
   }
 
   Future<bool> saveAlarmTimes(Alarm alarm) async {
-    response = await http.patch(Uri.parse('$baseUrl/saveTimes'),
+    request = await http.patch(Uri.parse('$baseUrl/saveTimes'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -74,7 +81,7 @@ class HttpService {
           'alarmInfo': alarm,
         }));
 
-    if (response.statusCode == 201) {
+    if (request.statusCode == 201) {
       return true;
     } else {
       return false;
