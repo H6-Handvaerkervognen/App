@@ -12,8 +12,9 @@ import 'package:haandvaerkervognen_app/widgets/BluetoothPairButton.dart';
 ///Ability to pair more with bluetooth or navigate to each alarm's page.
 ///Also able to logout from here
 class Frontpage extends StatefulWidget {
-  const Frontpage({super.key, required this.http});
+  const Frontpage({super.key, required this.username, required this.http});
 
+  final String username;
   final HttpService http;
 
   @override
@@ -125,7 +126,7 @@ class _FrontpageState extends State<Frontpage> {
     ];
 
     //Add username
-    List<Alarm> alarms = await widget.http.getAlarms('');
+    List<Alarm> alarms = await widget.http.getAlarms(widget.username);
 
     if (alarms.isNotEmpty) {
       subscribeToAlarms(alarms);

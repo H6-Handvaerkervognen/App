@@ -118,7 +118,8 @@ class _LoginpageState extends State<Loginpage> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (BuildContext context) => Frontpage(http: http)));
+            builder: (BuildContext context) =>
+                Frontpage(username: usernameController.text, http: http)));
   }
 
   ///Navigates to the register page
