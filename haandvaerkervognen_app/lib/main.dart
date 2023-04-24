@@ -16,10 +16,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Haandvaerkernes Alarm',
-      routes: {
-        'registerPage': (context) => const RegisterPage(),
-        'frontPage': (context) => const Frontpage(),
-      },
       theme: ThemeData(
         // This is the theme of your application.
         //

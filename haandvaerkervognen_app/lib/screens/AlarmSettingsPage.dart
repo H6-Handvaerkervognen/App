@@ -28,11 +28,15 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
           child: Column(
         children: [
           const Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 7),
             child: Text(
               'Alarm navn',
               style: TextStyle(fontSize: 32),
             ),
+          ),
+          Text(
+            widget.alarm.name,
+            style: const TextStyle(fontSize: 24),
           ),
           const SizedBox(
             height: 80,
@@ -45,7 +49,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                 children: [
                   Column(
                     children: [
-                      Text('Start'),
+                      const Text('Start'),
                       TimePickerSpinnerPopUp(
                         controller: startTimeController,
                         initTime: DateTime.now(),
@@ -60,7 +64,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                   ),
                   Column(
                     children: [
-                      Text('Slut'),
+                      const Text('Slut'),
                       TimePickerSpinnerPopUp(
                         mode: CupertinoDatePickerMode.time,
                         controller: endTimeController,
@@ -83,6 +87,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
               ),
             ),
           ),
+          Spacer(),
           ElevatedButton(onPressed: saveChanges, child: const Text('Gem'))
         ],
       )),

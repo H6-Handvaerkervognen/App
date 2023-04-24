@@ -1,10 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
+import 'package:haandvaerkervognen_app/screens/AlarmPage.dart';
 import 'package:haandvaerkervognen_app/screens/AlarmSettingsPage.dart';
+import 'package:haandvaerkervognen_app/services/HttpService.dart';
 import 'package:haandvaerkervognen_app/widgets/BluetoothPairButton.dart';
 
 class Frontpage extends StatefulWidget {
-  const Frontpage({super.key});
+  const Frontpage({super.key, required this.http});
+
+  final HttpService http;
 
   @override
   State<Frontpage> createState() => _FrontpageState();
@@ -16,74 +22,87 @@ class _FrontpageState extends State<Frontpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Titel', style: TextStyle(fontSize: 30)),
-        ),
-        body: FutureBuilder<List<Alarm>>(
-          future: someFutureFunctionReturningString(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              Text('There was an error ${snapshot.error}');
-            }
-            if (snapshot.hasData) {
-              //Generate elements
-              List<Alarm> fetchedAlarms = snapshot.data as List<Alarm>;
-              alarms = fetchedAlarms;
-              if (alarms.isEmpty) {
-                return Center(
-                    child: BluetoothPairButton(
-                        minWidth: 200,
-                        minHeight: 55,
-                        maxWidth: 275,
-                        maxHeight: 60));
-              }
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 2, 16),
+        child: FloatingActionButton(
+            onPressed: logOut,
+            splashColor: Colors.blue[300],
+            backgroundColor: Colors.blue,
+            child: const Icon(
+              Icons.logout_outlined,
+            )),
+      ),
+      appBar: AppBar(
+        title: const Text('Titel', style: TextStyle(fontSize: 30)),
+      ),
+      body: FutureBuilder<List<Alarm>>(
+        future: getAlarms(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            Text('There was an error ${snapshot.error}');
+          }
+          if (snapshot.hasData) {
+            //Generate elements
+            List<Alarm> fetchedAlarms = snapshot.data as List<Alarm>;
+            alarms = fetchedAlarms;
+            if (alarms.isEmpty) {
               return Center(
-                child: Column(
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: List.generate(
-                          alarms.length,
-                          (index) => Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal:
-                                      0.15 * MediaQuery.of(context).size.width),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () =>
-                                          goToAlarmSettings(alarms[index]),
-                                      child: Text(alarms[index].iD),
-                                    ),
+                  child: BluetoothPairButton(
+                      minWidth: 200,
+                      minHeight: 55,
+                      maxWidth: 275,
+                      maxHeight: 60,
+                      fontSize: 30));
+            }
+            return Center(
+              child: Column(
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: List.generate(
+                        alarms.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal:
+                                    0.15 * MediaQuery.of(context).size.width),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () =>
+                                        goToAlarmPage(alarms[index]),
+                                    child: Text(alarms[index].iD),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const Spacer(),
-                    BluetoothPairButton(
-                        minWidth: 220,
-                        minHeight: 40,
-                        maxWidth: 260,
-                        maxHeight: 50)
-                  ],
-                ),
-              );
-            }
-            //Make pair widget
-            return const Center(child: CircularProgressIndicator());
-          },
-        ));
+                  ),
+                  const Spacer(),
+                  BluetoothPairButton(
+                      minWidth: 220,
+                      minHeight: 40,
+                      maxWidth: 260,
+                      maxHeight: 50,
+                      fontSize: 15)
+                ],
+              ),
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
   }
 
-  Future<List<Alarm>> someFutureFunctionReturningString() async {
+  Future<List<Alarm>> getAlarms() async {
     List<Alarm> testAlarms = [
       Alarm(
           iD: 'isda1',
@@ -96,21 +115,25 @@ class _FrontpageState extends State<Frontpage> {
           endTime: TimeOfDay.now(),
           name: 'Jespers bil'),
     ];
+    List<Alarm> alarms = await widget.http.getAlarms();
+    if (alarms.isEmpty) {
+      return testAlarms;
+    }
 
-    await Future.delayed(Duration(milliseconds: 2));
-    return testAlarms;
+    await Future.delayed(const Duration(milliseconds: 2));
+    return alarms;
   }
 
-  //tryAddAlarm(value) {}
+  //Logout method
+  void logOut() {}
 
-  void goToAlarmSettings(Alarm alarm) {
+  goToAlarmPage(Alarm alarm) {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AlarmSettingsPage(
+            builder: (context) => AlarmPage(
+                  http: widget.http,
                   alarm: alarm,
                 )));
   }
-
-  void searchForBtDevices() {}
 }

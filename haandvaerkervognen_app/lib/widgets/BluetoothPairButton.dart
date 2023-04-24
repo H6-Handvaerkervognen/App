@@ -13,12 +13,14 @@ class BluetoothPairButton extends StatefulWidget {
       required this.minWidth,
       required this.minHeight,
       required this.maxWidth,
-      required this.maxHeight});
+      required this.maxHeight,
+      required this.fontSize});
 
   final double minWidth;
   final double maxWidth;
   final double minHeight;
   final double maxHeight;
+  final double fontSize;
 
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -57,13 +59,14 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
         ),
       ),
       child: Row(
-        children: const [
-          Icon(Icons.bluetooth, size: 40),
-          Spacer(flex: 1),
+        children: [
+          const Icon(Icons.bluetooth, size: 40),
+          const Spacer(flex: 1),
           FittedBox(
               fit: BoxFit.fitWidth,
-              child: Text('Par ny alarm', style: TextStyle(fontSize: 30))),
-          Spacer(flex: 2),
+              child: Text('Par ny alarm',
+                  style: TextStyle(fontSize: widget.fontSize))),
+          const Spacer(flex: 2),
         ],
       ),
     );
@@ -81,7 +84,6 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
         }
       }
     });
-    //streamSubscription.onError(handleError);
     streamSubscription.onDone(() {
       FlutterBluetoothSerial.instance.cancelDiscovery();
       showBluetoothDiscoverDialog(ids);

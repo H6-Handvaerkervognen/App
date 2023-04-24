@@ -17,7 +17,7 @@ class _LoginpageState extends State<Loginpage> {
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  //final clientService = HttpService();
+  final http = HttpService();
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,8 @@ class _LoginpageState extends State<Loginpage> {
                   // Validate returns true if the form is valid, or false otherwise.
                   if (_formKey.currentState!.validate()) {
                     //try to login
-                    //await clientService.login(usernameController.text);
+                    await http.login(
+                        usernameController.text, passwordController.text);
                     goToFrontPage();
                   }
                 },
@@ -113,7 +114,7 @@ class _LoginpageState extends State<Loginpage> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (BuildContext context) => const Frontpage()));
+            builder: (BuildContext context) => Frontpage(http: http)));
   }
 
   void goToRegister() {

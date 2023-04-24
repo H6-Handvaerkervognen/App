@@ -10,4 +10,12 @@ class Alarm {
   late TimeOfDay startTime;
   late TimeOfDay endTime;
   late String name;
+
+  factory Alarm.fromJson(Map<String, dynamic> json) {
+    return Alarm(
+        iD: json['alarmId'],
+        startTime: json['startTime'],
+        endTime: json['endTime'],
+        name: json['name']);
+  }
 }
