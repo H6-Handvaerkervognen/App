@@ -26,6 +26,11 @@ class _FrontpageState extends State<Frontpage> {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseMessaging.onMessage.listen((message) {
+      print('MESSAGE RECEIVED');
+      onForegroundNotification(context, message);
+    });
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -135,12 +140,13 @@ class _FrontpageState extends State<Frontpage> {
     ];
     //Test topic always subscribed to.
     FirebaseMessaging.instance.subscribeToTopic('Test');
+    print('Subscribed to test');
     return testAlarms;
   }
 
   ///Logout method
   void logOut() async {
-    //print(await FirebaseMessaging.instance.getToken());
+    print(await FirebaseMessaging.instance.getToken());
     //FirebaseMessaging.instance.subscribeToTopic('Test');
     _tokenService = TokenService();
     _tokenService.dropToken();
@@ -167,5 +173,27 @@ class _FrontpageState extends State<Frontpage> {
       FirebaseMessaging.instance.subscribeToTopic(alarms[i].iD);
       print('Subscribed to topic: ${alarms[i].iD}');
     }
+  }
+
+  ///Method for handling an message appearing while the app is in the foreground
+  onForegroundNotification(BuildContext context, RemoteMessage message) {
+    print('On foreground notif called');
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: ListTile(
+            title: Text(message.notification!.title!),
+            subtitle: Text(message.notification!.body!),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Ok'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
