@@ -1,10 +1,7 @@
-import 'dart:math';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:haandvaerkervognen_app/screens/AlarmPage.dart';
-import 'package:haandvaerkervognen_app/screens/AlarmSettingsPage.dart';
 import 'package:haandvaerkervognen_app/services/HttpService.dart';
 import 'package:haandvaerkervognen_app/widgets/BluetoothPairButton.dart';
 

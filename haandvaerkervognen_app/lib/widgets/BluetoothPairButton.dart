@@ -129,8 +129,8 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
     isBonded = (await FlutterBluetoothSerial.instance
         .bondDeviceAtAddress(alarmAddress))!;
 
-    BluetoothConnection.toAddress(alarmAddress).then((_connection) {
-      connection = _connection;
+    BluetoothConnection.toAddress(alarmAddress).then((btConn) {
+      connection = btConn;
       connection.input!.listen((data) {
         _onDataReceived(data);
       });

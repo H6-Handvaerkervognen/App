@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class HttpService {
   //Api base url
-  final String baseUrl = 'https://google.com/api';
+  final String baseUrl = 'https://URL_HERE/api';
   late http.Response response;
   final TokenService _tokenService = TokenService();
 
@@ -21,7 +21,7 @@ class HttpService {
         LoginCredentials(username: username, password: password);
 
     response = await http
-        .post(Uri.parse('$baseUrl/login'),
+        .post(Uri.parse('$baseUrl/Login/Login'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -40,82 +40,99 @@ class HttpService {
   ///Used for saving a phone and alarm pairing after using bluetooth
   Future<bool> pairAlarm(String username, Alarm alarmInfo) async {
     PairInfo info = PairInfo(username: username, AlarmInfo: alarmInfo);
-
-    response = await http
-        .post(Uri.parse('$baseUrl/savePairing'),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode(<String, dynamic>{
-              'PairInfo': info,
-            }))
-        .timeout(Duration(seconds: timeoutSecondsDuration));
-
-    if (response.statusCode == 201) {
-      return true;
-    } else {
-      return false;
+    String? token = await _tokenService.getToken();
+    if (token != null) {
+      response = await http
+          .post(Uri.parse('$baseUrl/App/PairAlarm'),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Token': token,
+              },
+              body: jsonEncode(<String, dynamic>{
+                'PairInfo': info,
+              }))
+          .timeout(Duration(seconds: timeoutSecondsDuration));
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
     }
+    return false;
   }
 
   ///Fetches all alarms that the user has access to
   Future<List<Alarm>> getAlarms(String username) async {
-    try {
-      response = await http.get(Uri.parse('$baseUrl/alarms')).timeout(
-            Duration(seconds: timeoutSecondsDuration),
-          );
+    String? token = await _tokenService.getToken();
+    if (token != null) {
+      try {
+        response = await http
+            .get(Uri.parse('$baseUrl/App/GetAlarms'), headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Token': token,
+        }).timeout(
+          Duration(seconds: timeoutSecondsDuration),
+        );
 
-      if (response.statusCode == 200) {
-        Iterable alarms = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          Iterable alarms = jsonDecode(response.body);
 
-        return List<Alarm>.from(alarms.map((alarm) => Alarm.fromJson(alarm)));
-      } else {
+          return List<Alarm>.from(alarms.map((alarm) => Alarm.fromJson(alarm)));
+        } else {
+          return List.empty();
+        }
+      } on TimeoutException catch (e) {
         return List.empty();
       }
-    } on TimeoutException catch (e) {
-      return List.empty();
     }
+    return List.empty();
   }
 
   ///Sends a request to stop an alarm. T
   ///The api then checks if the alarm is actually going
   stopAlarm(String alarmId) async {
-    response = await http
-        .post(Uri.parse('$baseUrl/stop'),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode(<String, dynamic>{
-              'alarmId': alarmId,
-            }))
-        .timeout(Duration(seconds: timeoutSecondsDuration));
+    String? token = await _tokenService.getToken();
+    if (token != null) {
+      response = await http
+          .post(Uri.parse('$baseUrl/App/StopAlarm'),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Token': token,
+              },
+              body: jsonEncode(<String, dynamic>{
+                'alarmId': alarmId,
+              }))
+          .timeout(Duration(seconds: timeoutSecondsDuration));
 
-    if (response.statusCode == 200) {
-      Iterable alarms = jsonDecode(response.body);
-
-      return List<Alarm>.from(alarms.map((alarm) => Alarm.fromJson(alarm)));
-    } else {
-      return List.empty();
+      if (response.statusCode == 200) {
+      } else {
+        return List.empty();
+      }
     }
   }
 
   ///Save an alarm after some of it's values have been altered
   Future<bool> updateAlarmInfo(Alarm alarm) async {
-    response = await http
-        .patch(Uri.parse('$baseUrl/saveTimes'),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode(<String, dynamic>{
-              'alarmInfo': alarm,
-            }))
-        .timeout(Duration(seconds: timeoutSecondsDuration));
+    String? token = await _tokenService.getToken();
+    if (token != null) {
+      response = await http
+          .patch(Uri.parse('$baseUrl/App/UpdateAlarmInfo'),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Token': token,
+              },
+              body: jsonEncode(<String, dynamic>{
+                'alarmInfo': alarm,
+              }))
+          .timeout(Duration(seconds: timeoutSecondsDuration));
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     }
+    return false;
   }
 
   ///Used for registering a new user
@@ -124,7 +141,7 @@ class HttpService {
         LoginCredentials(username: username, password: password);
 
     response = await http
-        .post(Uri.parse('$baseUrl/register'),
+        .post(Uri.parse('$baseUrl/Login/CreateNewUser'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
