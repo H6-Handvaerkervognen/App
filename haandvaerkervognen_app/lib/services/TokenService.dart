@@ -15,4 +15,9 @@ class TokenService {
     prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
+
+  void dropToken() async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+  }
 }

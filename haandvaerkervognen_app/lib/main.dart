@@ -6,10 +6,6 @@ import 'package:haandvaerkervognen_app/screens/Loginpage.dart';
 import 'package:haandvaerkervognen_app/screens/RegisterPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message");
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -49,6 +45,7 @@ class MyApp extends StatelessWidget {
 
   ///Method for handling an message appearing while the app is in the foreground
   onForegroundNotification(BuildContext context, RemoteMessage message) {
+    print('On foreground notif called');
     showDialog(
       context: context,
       builder: (context) {
@@ -67,4 +64,8 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+}
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message");
 }

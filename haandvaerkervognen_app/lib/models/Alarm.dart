@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 ///Model for the physical alarm
@@ -19,5 +21,14 @@ class Alarm {
         startTime: json['startTime'],
         endTime: json['endTime'],
         name: json['name']);
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ID'] = iD;
+    data['startTime'] = startTime;
+    data['endTime'] = endTime;
+    data['name'] = name;
+    return data;
   }
 }

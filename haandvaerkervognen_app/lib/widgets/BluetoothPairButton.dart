@@ -46,9 +46,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        startBlueTooth();
-      },
+      onPressed: isScanning ? null : startBlueTooth,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[700],
         minimumSize: Size(widget.minWidth, widget.minHeight),
@@ -72,23 +70,34 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
   }
 
   Future<List<String>> startBlueTooth() async {
-    late List<String> ids = List.empty(growable: true);
-    isScanning = true;
-    StreamSubscription streamSubscription =
-        FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
-      isScanning = true;
-      if (r.device.name == 'VAN ALARM' && !ids.contains(r.device.address)) {
-        if (!r.device.isBonded) {
-          ids.add(r.device.address);
+    try {
+      List<String> ids = List.empty(growable: true);
+      setState(() {
+        isScanning = true;
+      });
+      StreamSubscription streamSubscription =
+          FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
+        if (r.device.name == 'VAN ALARM' && !ids.contains(r.device.address)) {
+          if (!r.device.isBonded) {
+            ids.add(r.device.address);
+          }
         }
-      }
-    });
-    streamSubscription.onDone(() {
-      FlutterBluetoothSerial.instance.cancelDiscovery();
-      showBluetoothDiscoverDialog(ids);
-      isScanning = false;
-    });
-    return ids;
+      });
+      streamSubscription.onDone(() {
+        FlutterBluetoothSerial.instance.cancelDiscovery();
+        showBluetoothDiscoverDialog(ids);
+        setState(() {
+          isScanning = false;
+        });
+      });
+      return ids;
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        isScanning = false;
+      });
+    }
+    return List.empty();
   }
 
   void showBluetoothDiscoverDialog(List<String> strings) {
@@ -117,7 +126,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
           );
         } else {
           return const AlertDialog(
-            actions: [Text('Ingen nye alarmer fundet')],
+            actions: [Center(child: Text('Ingen nye alarmer fundet.'))],
           );
         }
       },

@@ -2,7 +2,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:haandvaerkervognen_app/screens/AlarmPage.dart';
+import 'package:haandvaerkervognen_app/screens/Loginpage.dart';
 import 'package:haandvaerkervognen_app/services/HttpService.dart';
+import 'package:haandvaerkervognen_app/services/TokenService.dart';
 import 'package:haandvaerkervognen_app/widgets/BluetoothPairButton.dart';
 
 ///Page that has overview of every alarm currently connected.
@@ -20,12 +22,14 @@ class Frontpage extends StatefulWidget {
 
 class _FrontpageState extends State<Frontpage> {
   late List<Alarm> alarms;
+  late TokenService _tokenService;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Titel', style: TextStyle(fontSize: 30)),
+        centerTitle: true,
+        title: const Text('Oversigt', style: TextStyle(fontSize: 30)),
       ),
       body: FutureBuilder<List<Alarm>>(
         //If the () are there, the method is run immediately
@@ -96,7 +100,7 @@ class _FrontpageState extends State<Frontpage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 2, 16),
         child: FloatingActionButton(
-          onPressed: logOut,
+          onPressed: () => logOut(),
           splashColor: Colors.blue[300],
           backgroundColor: Colors.blue,
           child: const Icon(
@@ -137,8 +141,13 @@ class _FrontpageState extends State<Frontpage> {
   ///Logout method
   void logOut() async {
     //print(await FirebaseMessaging.instance.getToken());
-    FirebaseMessaging.instance.subscribeToTopic('Test');
-    //Navigator.popUntil(context, (route) => route == '/');
+    //FirebaseMessaging.instance.subscribeToTopic('Test');
+    _tokenService = TokenService();
+    _tokenService.dropToken();
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => const Loginpage()));
   }
 
   ///Navigates to a specified alarm
@@ -155,8 +164,8 @@ class _FrontpageState extends State<Frontpage> {
   ///Loops through all alarms and subscribes to their unique topics
   void subscribeToAlarms(List<Alarm> alarms) {
     for (int i = 0; i < alarms.length; i++) {
-      print('Subscribed to topic: ${alarms[i].iD}');
       FirebaseMessaging.instance.subscribeToTopic(alarms[i].iD);
+      print('Subscribed to topic: ${alarms[i].iD}');
     }
   }
 }

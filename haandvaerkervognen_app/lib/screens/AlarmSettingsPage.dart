@@ -27,7 +27,11 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('SettingsPage - ${widget.alarm.name}')),
+        centerTitle: true,
+        title: const Text(
+          'Indstillinger',
+          style: TextStyle(fontSize: 30),
+        ),
       ),
       body: Center(
           child: Column(
@@ -61,8 +65,10 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                         barrierColor:
                             Colors.black12, //Barrier Color when pop up show
                         onChange: (dateTime) {
-                          startTime = TimeOfDay.fromDateTime(dateTime);
-                          widget.valueChanged = true;
+                          setState(() {
+                            startTime = TimeOfDay.fromDateTime(dateTime);
+                            widget.valueChanged = true;
+                          });
                         },
                       ),
                     ],
@@ -80,7 +86,6 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                         barrierColor:
                             Colors.black12, //Barrier Color when pop up show
                         onChange: (dateTime) {
-                          // Implement your logic with select dateTime
                           setState(() {
                             endTime = TimeOfDay.fromDateTime(dateTime);
                             widget.valueChanged = true;
@@ -93,10 +98,16 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
               ),
             ),
           ),
-          const Spacer(),
-          ElevatedButton(
-              onPressed: widget.valueChanged ? saveChanges : null,
-              child: const Text('Gem'))
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 60, 0, 0),
+            child: SizedBox(
+              height: 40,
+              width: 100,
+              child: ElevatedButton(
+                  onPressed: widget.valueChanged ? saveChanges : null,
+                  child: const Text('Gem')),
+            ),
+          )
         ],
       )),
     );

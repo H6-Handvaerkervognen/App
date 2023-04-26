@@ -23,8 +23,12 @@ class _AlarmPageState extends State<AlarmPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Center(
-          child: Text(widget.alarm.name),
+          child: Text(
+            widget.alarm.name,
+            style: TextStyle(fontSize: 30),
+          ),
         ),
         actions: [
           //Settings button

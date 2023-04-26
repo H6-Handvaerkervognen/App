@@ -92,7 +92,13 @@ class _LoginpageState extends State<Loginpage> {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
                       //try to login
-                      //await http.login(usernameController.text, passwordController.text);
+                      /* bool result = await http.login(
+                          usernameController.text, passwordController.text);
+
+                      if (!result) {
+                        showSnackBar();
+                      } else {
+                      } */
                       goToFrontPage();
                     }
                   },
@@ -126,5 +132,11 @@ class _LoginpageState extends State<Loginpage> {
   void goToRegister() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => RegisterPage(http: http)));
+  }
+
+  ///Shows a snackbar if the user couldn't login with what was written
+  void showSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('De indtastede oplysninger var ikke gyldige')));
   }
 }

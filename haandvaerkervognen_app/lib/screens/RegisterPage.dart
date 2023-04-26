@@ -132,7 +132,6 @@ class _RegisterPageState extends State<RegisterPage> {
           .registerUser(usernameController.text, passwordController.text);
 
       //Show snackbar in another method
-
       if (res) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -140,12 +139,13 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         );
         Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Noget er gået galt: Fejl: '),
+          ),
+        );
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Noget er gået galt: Fejl: '),
-        ),
-      );
     }
   }
 }
