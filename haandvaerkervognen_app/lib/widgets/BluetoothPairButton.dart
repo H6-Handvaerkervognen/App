@@ -47,9 +47,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        setState(() {
-          isScanning ? null : () => startBlueTooth();
-        });
+        startBlueTooth();
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[700],
@@ -180,13 +178,12 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
                   ),
                   const Text('Alarm tider'),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: const [Text('Start'), Text('Slut')],
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      TimePickerSpinnerPopUp(
-                        initTime: DateTime.now(),
-                      ),
                       TimePickerSpinnerPopUp(
                         controller: widget.startTimeController,
                         initTime: DateTime.now(),
@@ -209,7 +206,10 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
                     ],
                   ),
                   ElevatedButton(
-                      onPressed: () => sendpairInfo(alarmAddress),
+                      onPressed: () {
+                        sendpairInfo(alarmAddress);
+                        Navigator.pop(context);
+                      },
                       child: const Text('Forbind')),
                 ],
               )
@@ -241,15 +241,17 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
       await connection.output.done;
       if (alarmData.isNotEmpty && alarmData.contains('!')) {
         print('$alarmData');
+
         //create DTO and pop to main page
-        http = HttpService();
-        http.savePairing(
+        bool result = await http.pairAlarm(
             'GetAppID',
             Alarm(
                 iD: alarmAddress,
                 startTime: startTime,
                 endTime: endTime,
                 name: widget.nameController.text));
+
+        //Show result
 
         FlutterBluetoothSerial.instance
             .removeDeviceBondWithAddress(alarmAddress);

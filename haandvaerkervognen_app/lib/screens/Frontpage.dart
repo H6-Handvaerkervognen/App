@@ -112,6 +112,14 @@ class _FrontpageState extends State<Frontpage> {
 
   ///Fetches alarms from the api related to this user
   Future<List<Alarm>> getAlarms() async {
+    //Add username
+    List<Alarm> alarms = await widget.http.getAlarms(widget.username);
+
+    if (alarms.isNotEmpty) {
+      subscribeToAlarms(alarms);
+      return alarms;
+    }
+
     List<Alarm> testAlarms = [
       Alarm(
           iD: 'isda1',
@@ -124,22 +132,16 @@ class _FrontpageState extends State<Frontpage> {
           endTime: TimeOfDay.now(),
           name: 'Jespers bil'),
     ];
-
-    //Add username
-    List<Alarm> alarms = await widget.http.getAlarms(widget.username);
-
-    if (alarms.isNotEmpty) {
-      subscribeToAlarms(alarms);
-      return alarms;
-    }
-
+    //Test topic always subscribed to.
     FirebaseMessaging.instance.subscribeToTopic('Test');
     return testAlarms;
   }
 
   ///Logout method
   void logOut() async {
-    Navigator.popUntil(context, (route) => route == '/');
+    //print(await FirebaseMessaging.instance.getToken());
+    FirebaseMessaging.instance.subscribeToTopic('Test');
+    //Navigator.popUntil(context, (route) => route == '/');
   }
 
   ///Navigates to a specified alarm

@@ -108,7 +108,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
       widget.alarm.startTime = startTime;
       widget.alarm.endTime = endTime;
 
-      bool response = await widget.http.saveAlarmTimes(widget.alarm);
+      bool response = await widget.http.updateAlarmInfo(widget.alarm);
       widget.valueChanged = false;
       //Show snackbar with result
     });
