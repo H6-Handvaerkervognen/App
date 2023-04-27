@@ -8,7 +8,7 @@ import 'package:haandvaerkervognen_app/services/TokenService.dart';
 
 class HttpService {
   //Api base url
-  final String baseUrl = 'https://192.168.1.11/api';
+  final String baseUrl = 'https://192.168.1.11';
   late HttpClient client;
   late HttpClientRequest request;
   late HttpClientResponse response;
@@ -38,9 +38,7 @@ class HttpService {
 
       request = await client.postUrl(Uri.parse('$baseUrl/Login/Login'));
       request.headers.set('Content-Type', 'application/json; charset=UTF-8');
-      request.add(utf8.encode(jsonEncode(<String, dynamic>{
-        'loginCredentials': credentials,
-      })));
+      request.add(utf8.encode(jsonEncode(credentials.toJson())));
 
       response = await request.close();
 
@@ -73,9 +71,7 @@ class HttpService {
         request = await client.postUrl(Uri.parse('$baseUrl/App/PairAlarm'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
-        request.add(utf8.encode(jsonEncode(<String, dynamic>{
-          'PairInfo': info,
-        })));
+        request.add(utf8.encode(jsonEncode(info.toJson())));
 
         response = await request.close();
         if (response.statusCode == 201) {
@@ -106,6 +102,7 @@ class HttpService {
         request = await client.getUrl(Uri.parse('$baseUrl/App/GetAlarms'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
+        request.add(utf8.encode(jsonEncode(username)));
 
         HttpClientResponse response = await request.close();
 
@@ -141,9 +138,7 @@ class HttpService {
         request = await client.postUrl(Uri.parse('$baseUrl/App/StopAlarm'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
-        request.add(utf8.encode(jsonEncode(<String, dynamic>{
-          'alarmId': alarmId,
-        })));
+        request.add(utf8.encode(jsonEncode(alarmId)));
         await request.close();
       } catch (e) {
         print(e);
@@ -164,9 +159,7 @@ class HttpService {
             await client.patchUrl(Uri.parse('$baseUrl/App/UpdateAlarmInfo'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
-        request.add(utf8.encode(jsonEncode(<String, dynamic>{
-          'alarmInfo': alarm,
-        })));
+        request.add(utf8.encode(jsonEncode(alarm.toJson())));
 
         response = await request.close();
 
@@ -191,9 +184,7 @@ class HttpService {
 
       request = await client.postUrl(Uri.parse('$baseUrl/Login/CreateNewUser'));
       request.headers.set('Content-Type', 'application/json; charset=UTF-8');
-      request.add(utf8.encode(jsonEncode(<String, dynamic>{
-        'loginCredentials': credentials,
-      })));
+      request.add(utf8.encode(jsonEncode(credentials.toJson())));
 
       response = await request.close();
       return response.statusCode == 201;
