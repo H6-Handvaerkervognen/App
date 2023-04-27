@@ -92,14 +92,14 @@ class _LoginpageState extends State<Loginpage> {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
                       //try to login
-                      /* bool result = await http.login(
+                      bool result = await http.login(
                           usernameController.text, passwordController.text);
 
                       if (!result) {
                         showSnackBar();
                       } else {
-                      } */
-                      goToFrontPage();
+                        goToFrontPage();
+                      }
                     }
                   },
                   child: const Text('Login'),
