@@ -27,7 +27,6 @@ class _FrontpageState extends State<Frontpage> {
   @override
   Widget build(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
-      print('MESSAGE RECEIVED');
       onForegroundNotification(context, message);
     });
 
@@ -177,7 +176,6 @@ class _FrontpageState extends State<Frontpage> {
 
   ///Method for handling an message appearing while the app is in the foreground
   onForegroundNotification(BuildContext context, RemoteMessage message) {
-    print('On foreground notif called');
     showDialog(
       context: context,
       builder: (context) {
