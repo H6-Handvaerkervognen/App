@@ -49,7 +49,7 @@ class _AlarmPageState extends State<AlarmPage> {
                       minimumSize: const Size(330, 400),
                       shape: const CircleBorder(),
                       backgroundColor: Colors.black87),
-                  onPressed: () => widget.http.stopAlarm(widget.alarm.iD),
+                  onPressed: () => widget.http.stopAlarm(widget.alarm.alarmId),
                   child: const Icon(
                     Icons.stop_circle,
                     size: 300,

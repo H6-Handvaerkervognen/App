@@ -277,7 +277,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
         bool result = await http.pairAlarm(
             widget.username,
             Alarm(
-                iD: alarmAddress,
+                alarmId: alarmAddress,
                 startTime: startTime.format(context),
                 endTime: endTime.format(context),
                 name: widget.nameController.text));

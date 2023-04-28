@@ -79,7 +79,7 @@ class _FrontpageState extends State<Frontpage> {
                                   child: ElevatedButton(
                                     onPressed: () =>
                                         goToAlarmPage(alarms[index]),
-                                    child: Text(alarms[index].iD),
+                                    child: Text(alarms[index].alarmId),
                                   ),
                                 ),
                               ],
@@ -132,12 +132,12 @@ class _FrontpageState extends State<Frontpage> {
 
     List<Alarm> testAlarms = [
       Alarm(
-          iD: 'isda1',
+          alarmId: 'isda1',
           startTime: TimeOfDay.now().format(context),
           endTime: TimeOfDay.now().format(context),
           name: 'Carstens bil'),
       Alarm(
-          iD: 'Alarm 2',
+          alarmId: 'Alarm 2',
           startTime: TimeOfDay.now().format(context),
           endTime: TimeOfDay.now().format(context),
           name: 'Jespers bil'),
@@ -174,9 +174,9 @@ class _FrontpageState extends State<Frontpage> {
   ///Loops through all alarms and subscribes to their unique topics
   void subscribeToAlarms(List<Alarm> alarms) {
     for (int i = 0; i < alarms.length; i++) {
-      FirebaseMessaging.instance.subscribeToTopic(alarms[i].iD);
+      FirebaseMessaging.instance.subscribeToTopic(alarms[i].alarmId);
       if (kDebugMode) {
-        print('Subscribed to topic: ${alarms[i].iD}');
+        print('Subscribed to topic: ${alarms[i].alarmId}');
       }
     }
   }
