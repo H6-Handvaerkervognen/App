@@ -1,7 +1,51 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:haandvaerkervognen_app/screens/frontPage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:haandvaerkervognen_app/firebase_options.dart';
+import 'package:haandvaerkervognen_app/screens/Loginpage.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: true,
+    provisional: false,
+    sound: true,
+  );
+
+  //For android, you cannot make heads up foreground notifications,
+  //Unless the channel they are sent on are max importance, so we create a new channel instance
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    description:
+        'This channel is used for alarm going off notifications', // description
+    importance: Importance.max,
+  );
+
+  //Create a new channel (if a channel with an id already exists, it will be updated)
+  //After we set up the channel in the androidmanifest.xml So FCM will use this channel instead of the default one.
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  //Override the default channel
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  //Needed to make heads up foreground notifications on IOS
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true, badge: true, sound: true);
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   runApp(const MyApp());
 }
 
@@ -15,18 +59,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Haandvaerkernes Alarm',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.indigo,
       ),
-      home: const Frontpage(),
+      home: const Loginpage(),
     );
+  }
+}
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print("Handling a background message");
   }
 }

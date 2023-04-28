@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "682965950950",
+    "project_id": "h6-haandvaerkerne",
+    "storage_bucket": "h6-haandvaerkerne.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682965950950:android:32c6d6820a669eac1db627",
+        "android_client_info": {
+          "package_name": "com.example.haandvaerkervognen_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682965950950-np6mgjhcempl599oaj6hbjl9nrof6otq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgoGhjRljYUj1m2X2dhNXjzJUf2ig6W6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682965950950-np6mgjhcempl599oaj6hbjl9nrof6otq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "682965950950-100jfd6l3bf4jeqeg36ekj6602jhk8vf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.haandvaerkervognenApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682965950950:android:a0026447c66a6d3d1db627",
+        "android_client_info": {
+          "package_name": "haandvaerkerne.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682965950950-np6mgjhcempl599oaj6hbjl9nrof6otq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgoGhjRljYUj1m2X2dhNXjzJUf2ig6W6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682965950950-np6mgjhcempl599oaj6hbjl9nrof6otq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "682965950950-100jfd6l3bf4jeqeg36ekj6602jhk8vf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.haandvaerkervognenApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
