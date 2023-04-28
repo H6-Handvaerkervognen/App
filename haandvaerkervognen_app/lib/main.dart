@@ -1,16 +1,14 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:haandvaerkervognen_app/firebase_options.dart';
-import 'package:haandvaerkervognen_app/screens/Frontpage.dart';
 import 'package:haandvaerkervognen_app/screens/Loginpage.dart';
-import 'package:haandvaerkervognen_app/screens/RegisterPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  //await FirebaseMessaging.instance.getInitialMessage();
   await FirebaseMessaging.instance.requestPermission(
     alert: true,
     announcement: false,
@@ -27,7 +25,7 @@ void main() async {
     'high_importance_channel', // id
     'High Importance Notifications', // title
     description:
-        'This channel is used for important notifications.', // description
+        'This channel is used for alarm going off notifications', // description
     importance: Importance.max,
   );
 
@@ -36,6 +34,7 @@ void main() async {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  //Override the default channel
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
@@ -56,8 +55,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    //Give context to foreground notifier, so we can show notifications in app
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Haandvaerkernes Alarm',
@@ -70,5 +67,7 @@ class MyApp extends StatelessWidget {
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message");
+  if (kDebugMode) {
+    print("Handling a background message");
+  }
 }

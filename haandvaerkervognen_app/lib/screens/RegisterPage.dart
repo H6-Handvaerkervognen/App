@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:haandvaerkervognen_app/services/HttpService.dart';
 
 ///Page for creating a new user
@@ -35,6 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(
                   height: 30,
                 ),
+                //Username field
                 TextFormField(
                   controller: usernameController,
                   decoration: InputDecoration(
@@ -59,6 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(
                   height: 15,
                 ),
+                //Password field
                 TextFormField(
                   controller: passwordController,
                   decoration: InputDecoration(
@@ -86,6 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(
                   height: 15,
                 ),
+                //Re-enter password field
                 TextFormField(
                   controller: confirmPassController,
                   decoration: InputDecoration(
@@ -133,19 +132,24 @@ class _RegisterPageState extends State<RegisterPage> {
 
       //Show snackbar in another method
       if (res) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${usernameController.text} er blevet registeret!'),
-          ),
-        );
+        showSnackBar('${usernameController.text} er blevet registeret!');
+        //This should fix the "Don't use BuildContext across async gaps" according to this:
+        //https://dart-lang.github.io/linter/lints/use_build_context_synchronously.html
+        if (!context.mounted) return;
         Navigator.pop(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Noget er gået galt: Fejl: '),
-          ),
-        );
+        showSnackBar(
+            'Noget er desværrre gået galt, brugeren kunne ikke registreres.');
       }
     }
+  }
+
+  ///Shows a snackbar with a given text
+  showSnackBar(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+      ),
+    );
   }
 }

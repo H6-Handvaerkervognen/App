@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:haandvaerkervognen_app/services/HttpService.dart';
 import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
+///Button that show when you want to pair an alarm
 class BluetoothPairButton extends StatefulWidget {
   BluetoothPairButton(
       {super.key,
@@ -14,13 +15,15 @@ class BluetoothPairButton extends StatefulWidget {
       required this.minHeight,
       required this.maxWidth,
       required this.maxHeight,
-      required this.fontSize});
+      required this.fontSize,
+      required this.username});
 
   final double minWidth;
   final double maxWidth;
   final double minHeight;
   final double maxHeight;
   final double fontSize;
+  final String username;
 
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -39,9 +42,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
   late String alarmData = '';
 
   late BluetoothConnection connection;
-  late List<String> strings;
-  late HttpService http;
-  late Alarm newAlarm;
+  late HttpService http = HttpService();
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +70,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
     );
   }
 
+  ///Starts discovering bluetooth devices and looks for the name "VAN ALARM"
   Future<List<String>> startBlueTooth() async {
     try {
       List<String> ids = List.empty(growable: true);
@@ -92,7 +94,9 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
       });
       return ids;
     } catch (e) {
-      print('Error: $e');
+      if (kDebugMode) {
+        print('Error: $e');
+      }
       setState(() {
         isScanning = false;
       });
@@ -100,6 +104,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
     return List.empty();
   }
 
+  ///Shows all the found devices with "VAN ALARM" as their name
   void showBluetoothDiscoverDialog(List<String> strings) {
     showDialog(
       context: context,
@@ -133,20 +138,27 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
     );
   }
 
+  ///Tries bonding with a specified address
   bondWithAlarm(String alarmAddress) async {
-    print('Bonding with: $alarmAddress');
-    isBonded = (await FlutterBluetoothSerial.instance
-        .bondDeviceAtAddress(alarmAddress))!;
+    if (kDebugMode) {
+      print('Bonding with: $alarmAddress');
+    }
+    if (!isBonded) {
+      isBonded = (await FlutterBluetoothSerial.instance
+          .bondDeviceAtAddress(alarmAddress))!;
 
-    BluetoothConnection.toAddress(alarmAddress).then((btConn) {
-      connection = btConn;
-      connection.input!.listen((data) {
-        _onDataReceived(data);
+      BluetoothConnection.toAddress(alarmAddress).then((btConn) {
+        connection = btConn;
+        connection.input!.listen((data) {
+          _onDataReceived(data);
+        });
       });
-    });
-    showBluetoothInputDialog(alarmAddress);
+      showBluetoothInputDialog(alarmAddress);
+    }
   }
 
+  ///Shows the input dialog for pairing an alarm.
+  ///You need to use the correct code to get an OK from the alarm
   Future<void> showBluetoothInputDialog(String alarmAddress) async {
     if (isBonded) {
       await showDialog(
@@ -163,6 +175,7 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
                     width: 100,
                     child: TextFormField(
                       decoration: const InputDecoration(hintText: 'Alarm navn'),
+                      controller: widget.nameController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Angiv venligst et Alarm navn';
@@ -229,13 +242,18 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
     }
   }
 
+  ///Runs whenever you receive data from the paired alarm
   void _onDataReceived(Uint8List data) {
-    print(ascii.decode(data));
+    if (kDebugMode) {
+      print(ascii.decode(data));
+    }
     alarmData += ascii.decode(data);
 
     if (ascii.decode(data).contains('!')) {
       connection.finish(); // Closing connection
-      print('Disconnecting by local host');
+      if (kDebugMode) {
+        print('Disconnecting by local host');
+      }
     }
   }
 
@@ -243,31 +261,39 @@ class _BluetoothPairButtonState extends State<BluetoothPairButton> {
     connection.close();
   }
 
+  ///Sends the attempted password to the alarm and reads the response.
+  ///If it contains a "!" it will send the pair information to the Api
   sendpairInfo(String alarmAddress) async {
     try {
       connection.output.add(Uint8List.fromList(
           utf8.encode("${widget.passwordController.text}\r\n")));
       await connection.output.done;
       if (alarmData.isNotEmpty && alarmData.contains('!')) {
-        print('$alarmData');
+        if (kDebugMode) {
+          print(alarmData);
+        }
 
         //create DTO and pop to main page
         bool result = await http.pairAlarm(
-            'GetAppID',
+            widget.username,
             Alarm(
                 iD: alarmAddress,
-                startTime: startTime,
-                endTime: endTime,
+                startTime: startTime.format(context),
+                endTime: endTime.format(context),
                 name: widget.nameController.text));
 
         //Show result
-
-        FlutterBluetoothSerial.instance
-            .removeDeviceBondWithAddress(alarmAddress);
+        if (kDebugMode) {
+          print('Did we bond successfully?: $result');
+        }
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     } finally {
+      isBonded = false;
+      FlutterBluetoothSerial.instance.removeDeviceBondWithAddress(alarmAddress);
       connection.close();
     }
   }

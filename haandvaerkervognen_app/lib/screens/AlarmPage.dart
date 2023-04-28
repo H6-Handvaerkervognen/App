@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:haandvaerkervognen_app/screens/AlarmSettingsPage.dart';
 import 'package:haandvaerkervognen_app/services/HttpService.dart';
@@ -10,7 +6,6 @@ import 'package:haandvaerkervognen_app/services/HttpService.dart';
 ///Page where you can stop the alarm and go into the settings of the alarm
 class AlarmPage extends StatefulWidget {
   const AlarmPage({super.key, required this.alarm, required this.http});
-
   final Alarm alarm;
   final HttpService http;
 
@@ -27,7 +22,7 @@ class _AlarmPageState extends State<AlarmPage> {
         title: Center(
           child: Text(
             widget.alarm.name,
-            style: TextStyle(fontSize: 30),
+            style: const TextStyle(fontSize: 30),
           ),
         ),
         actions: [
@@ -48,6 +43,7 @@ class _AlarmPageState extends State<AlarmPage> {
                   style: TextStyle(
                     fontSize: 50,
                   )),
+              //Big stop button
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       minimumSize: const Size(330, 400),
@@ -66,7 +62,7 @@ class _AlarmPageState extends State<AlarmPage> {
   }
 
   ///Goes to the AlarmSettingspage
-  ///Parameters are the current alarm we are navigating to and a http object to save any changes
+  ///Parameters are the current alarm we are navigating to and a http service object to save any changes
   void goToAlarmSettings(Alarm alarm) {
     Navigator.push(
         context,

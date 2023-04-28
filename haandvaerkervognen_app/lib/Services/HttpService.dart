@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:haandvaerkervognen_app/models/LoginCredentials.dart';
 import 'package:haandvaerkervognen_app/models/PairInfo.dart';
@@ -47,10 +48,14 @@ class HttpService {
         return true;
       }
     } on TimeoutException catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     } on Exception catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     } finally {
       client.close();
@@ -64,24 +69,30 @@ class HttpService {
     String? token = await _tokenService.getToken();
     if (token != null) {
       try {
-        PairInfo info = PairInfo(username: username, AlarmInfo: alarmInfo);
+        PairInfo info = PairInfo(username: username, alarmInfo: alarmInfo);
 
         setupClient();
 
         request = await client.postUrl(Uri.parse('$baseUrl/App/PairAlarm'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
-        request.headers.set('Token', token);
+        request.headers.set('token', token);
         request.add(utf8.encode(jsonEncode(info.toJson())));
-
+        if (kDebugMode) {
+          print(jsonEncode(info.toJson()));
+        }
         response = await request.close();
         if (response.statusCode == 201) {
           return true;
         }
       } on TimeoutException catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
         return false;
       } on Exception catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
         return false;
       } finally {
         client.close();
@@ -93,8 +104,6 @@ class HttpService {
   ///Fetches all alarms that the user has access to
   Future<List<Alarm>> getAlarms(String username) async {
     String? token = await _tokenService.getToken();
-    //for testing
-    token = 'Hey';
     if (token != null) {
       try {
         setupClient();
@@ -115,10 +124,14 @@ class HttpService {
           return List.empty();
         }
       } on TimeoutException catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
         return List.empty();
       } on Exception catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
         return List.empty();
       } finally {
         client.close();
@@ -141,7 +154,9 @@ class HttpService {
         request.add(utf8.encode(jsonEncode(alarmId)));
         await request.close();
       } catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
       } finally {
         client.close();
       }
@@ -165,7 +180,9 @@ class HttpService {
 
         return response.statusCode == 200;
       } catch (e) {
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
         return false;
       } finally {
         client.close();
@@ -189,7 +206,9 @@ class HttpService {
       response = await request.close();
       return response.statusCode == 201;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return false;
     } finally {
       client.close();

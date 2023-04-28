@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:haandvaerkervognen_app/services/HttpService.dart';
 import 'package:haandvaerkervognen_app/screens/Frontpage.dart';
 import 'package:haandvaerkervognen_app/screens/RegisterPage.dart';
-import 'package:haandvaerkervognen_app/screens/AlarmSettingsPage.dart';
 
 ///Landing page of app.
 ///You can login with an existing user or create a new one by navigating to the register page

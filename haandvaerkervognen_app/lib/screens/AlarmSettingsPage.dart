@@ -6,17 +6,18 @@ import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
 ///Page for changing settings concerning the alarm.
 class AlarmSettingsPage extends StatefulWidget {
-  AlarmSettingsPage({super.key, required this.alarm, required this.http});
+  const AlarmSettingsPage({super.key, required this.alarm, required this.http});
 
   final Alarm alarm;
   final HttpService http;
-  bool valueChanged = false;
 
   @override
   State<AlarmSettingsPage> createState() => _AlarmSettingsPageState();
 }
 
 class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
+  //Checks for any changes made to name, startTime or endTime
+  bool valueChanged = false;
   //Variables to control the TimePickerSpinner
   TimeOfDay startTime = const TimeOfDay(hour: 12, minute: 15);
   TimeOfDay endTime = const TimeOfDay(hour: 15, minute: 30);
@@ -25,6 +26,9 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController nameController =
+        TextEditingController.fromValue(
+            TextEditingValue(text: widget.alarm.name));
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -36,13 +40,19 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
       body: Center(
           child: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 7),
-            child: Text(
-              'Alarm navn',
-              style: TextStyle(fontSize: 32),
-            ),
-          ),
+          Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 7),
+              //Editable textfield for the name
+              child: TextField(
+                controller: nameController,
+                style: const TextStyle(fontSize: 32),
+                onChanged: (value) {
+                  setState(() {
+                    widget.alarm.name = value;
+                    valueChanged = true;
+                  });
+                },
+              )),
           Text(
             widget.alarm.name,
             style: const TextStyle(fontSize: 24),
@@ -67,7 +77,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                         onChange: (dateTime) {
                           setState(() {
                             startTime = TimeOfDay.fromDateTime(dateTime);
-                            widget.valueChanged = true;
+                            valueChanged = true;
                           });
                         },
                       ),
@@ -88,7 +98,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
                         onChange: (dateTime) {
                           setState(() {
                             endTime = TimeOfDay.fromDateTime(dateTime);
-                            widget.valueChanged = true;
+                            valueChanged = true;
                           });
                         },
                       ),
@@ -104,7 +114,7 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
               height: 40,
               width: 100,
               child: ElevatedButton(
-                  onPressed: widget.valueChanged ? saveChanges : null,
+                  onPressed: valueChanged ? saveChanges : null,
                   child: const Text('Gem')),
             ),
           )
@@ -115,13 +125,21 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
 
   ///Saves the startTime and endTime by making a patch request to the Api
   void saveChanges() {
+    String snackBarText = "Temp";
     setState(() async {
-      widget.alarm.startTime = startTime;
-      widget.alarm.endTime = endTime;
+      widget.alarm.startTime = startTime.format(context);
+      widget.alarm.endTime = endTime.format(context);
 
       bool response = await widget.http.updateAlarmInfo(widget.alarm);
-      widget.valueChanged = false;
+      valueChanged = false;
       //Show snackbar with result
+      if (response) {
+        snackBarText = "Registreringen gennemført!";
+      } else {
+        snackBarText = "Noget gik galt, registreringen fejlede";
+      }
     });
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(snackBarText)));
   }
 }
