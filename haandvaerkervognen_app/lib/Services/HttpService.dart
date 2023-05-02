@@ -6,6 +6,7 @@ import 'package:haandvaerkervognen_app/models/Alarm.dart';
 import 'package:haandvaerkervognen_app/models/LoginCredentials.dart';
 import 'package:haandvaerkervognen_app/models/PairInfo.dart';
 import 'package:haandvaerkervognen_app/services/TokenService.dart';
+import 'package:haandvaerkervognen_app/models/Pair.dart';
 
 class HttpService {
   //Api base url
@@ -107,7 +108,7 @@ class HttpService {
     if (token != null) {
       try {
         setupClient();
-
+        
         request = await client.getUrl(Uri.parse('$baseUrl/App/GetAlarms'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
@@ -142,16 +143,19 @@ class HttpService {
 
   ///Sends a request to stop an alarm.
   ///The api then checks if the alarm is actually going
-  Future<void> stopAlarm(String alarmId) async {
+  Future<void> stopAlarm(String alarmId, String username) async {
     String? token = await _tokenService.getToken();
     if (token != null) {
       try {
+        Pair pair = Pair(alarmId: alarmId, username: username);
+
         setupClient();
 
         request = await client.postUrl(Uri.parse('$baseUrl/App/StopAlarm'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
-        request.add(utf8.encode(jsonEncode(alarmId)));
+
+        request.add(utf8.encode(jsonEncode(pair.toJson())));
         await request.close();
       } catch (e) {
         if (kDebugMode) {
