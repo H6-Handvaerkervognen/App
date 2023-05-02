@@ -103,17 +103,16 @@ class HttpService {
   }
 
   ///Fetches all alarms that the user has access to
-  Future<List<Alarm>> getAlarms(String username,) async {
+  Future<List<Alarm>> getAlarms(String username) async {
     String? token = await _tokenService.getToken();
-    print("tokeeeeeeeeen$token");
     if (token != null) {
       try {
         setupClient();
-
-        request = await client.getUrl(Uri.parse('$baseUrl/App/GetAlarms?username=$username'));
+        
+        request = await client.getUrl(Uri.parse('$baseUrl/App/GetAlarms'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
-        // request.add(utf8.encode(jsonEncode(username)));
+        request.add(utf8.encode(jsonEncode(username)));
 
         HttpClientResponse response = await request.close();
 
@@ -150,11 +149,13 @@ class HttpService {
     if (token != null) {
       try {
         Pair pair = Pair(alarmId: alarmId, username: username);
+
         setupClient();
 
         request = await client.postUrl(Uri.parse('$baseUrl/App/StopAlarm'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
+
         request.add(utf8.encode(jsonEncode(pair.toJson())));
         await request.close();
       } catch (e) {

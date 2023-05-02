@@ -169,6 +169,7 @@ class _FrontpageState extends State<Frontpage> {
                   http: widget.http,
                   alarm: alarm,
                   username: widget.username,
+
                 )));
   }
 
