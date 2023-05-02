@@ -168,6 +168,7 @@ class _FrontpageState extends State<Frontpage> {
             builder: (context) => AlarmPage(
                   http: widget.http,
                   alarm: alarm,
+                  username: widget.username,
                 )));
   }
 

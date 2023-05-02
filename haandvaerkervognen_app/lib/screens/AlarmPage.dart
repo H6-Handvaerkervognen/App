@@ -5,9 +5,10 @@ import 'package:haandvaerkervognen_app/services/HttpService.dart';
 
 ///Page where you can stop the alarm and go into the settings of the alarm
 class AlarmPage extends StatefulWidget {
-  const AlarmPage({super.key, required this.alarm, required this.http});
+  const AlarmPage({super.key, required this.alarm, required this.http, required this.username});
   final Alarm alarm;
   final HttpService http;
+  final String username;
 
   @override
   State<AlarmPage> createState() => _AlarmPageState();
@@ -49,7 +50,7 @@ class _AlarmPageState extends State<AlarmPage> {
                       minimumSize: const Size(330, 400),
                       shape: const CircleBorder(),
                       backgroundColor: Colors.black87),
-                  onPressed: () => widget.http.stopAlarm(widget.alarm.alarmId),
+                  onPressed: () => widget.http.stopAlarm(widget.alarm.alarmId, widget.username),
                   child: const Icon(
                     Icons.stop_circle,
                     size: 300,
