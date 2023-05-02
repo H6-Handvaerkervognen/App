@@ -145,7 +145,6 @@ class HttpService {
   ///The api then checks if the alarm is actually going
   Future<void> stopAlarm(String alarmId, String username) async {
     String? token = await _tokenService.getToken();
-    print(token);
     if (token != null) {
       try {
         Pair pair = Pair(alarmId: alarmId, username: username);
