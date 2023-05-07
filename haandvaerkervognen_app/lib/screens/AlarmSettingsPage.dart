@@ -6,10 +6,14 @@ import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
 ///Page for changing settings concerning the alarm.
 class AlarmSettingsPage extends StatefulWidget {
-  const AlarmSettingsPage({super.key, required this.alarm, required this.http});
+   AlarmSettingsPage({super.key, required this.alarm, required this.username, required this.http});
 
   final Alarm alarm;
+  final String username;
   final HttpService http;
+  late final TextEditingController nameController =
+        TextEditingController.fromValue(
+            TextEditingValue(text: alarm.name));
 
   @override
   State<AlarmSettingsPage> createState() => _AlarmSettingsPageState();
@@ -26,9 +30,6 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController nameController =
-        TextEditingController.fromValue(
-            TextEditingValue(text: widget.alarm.name));
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -43,15 +44,17 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
           Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 7),
               //Editable textfield for the name
-              child: TextField(
-                controller: nameController,
-                style: const TextStyle(fontSize: 32),
-                onChanged: (value) {
-                  setState(() {
-                    widget.alarm.name = value;
-                    valueChanged = true;
-                  });
-                },
+              child: Center(
+                child: TextField(
+                  controller: widget.nameController,
+                  style: const TextStyle(fontSize: 32),
+                  onChanged: (value) {
+                    setState(() {
+                      widget.alarm.name = value;
+                      valueChanged = true;
+                    });
+                  },
+                ),
               )),
           Text(
             widget.alarm.name,
@@ -124,13 +127,14 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
   }
 
   ///Saves the startTime and endTime by making a patch request to the Api
-  void saveChanges() {
+  void saveChanges() async {
     String snackBarText = "Temp";
-    setState(() async {
+    setState(() {
       widget.alarm.startTime = startTime.format(context);
       widget.alarm.endTime = endTime.format(context);
+    });
 
-      bool response = await widget.http.updateAlarmInfo(widget.alarm);
+      bool response = await widget.http.updateAlarmInfo(widget.username, widget.alarm);
       valueChanged = false;
       //Show snackbar with result
       if (response) {
@@ -138,7 +142,6 @@ class _AlarmSettingsPageState extends State<AlarmSettingsPage> {
       } else {
         snackBarText = "Noget gik galt, registreringen fejlede";
       }
-    });
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(snackBarText)));
   }

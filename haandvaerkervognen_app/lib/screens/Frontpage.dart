@@ -79,7 +79,7 @@ class _FrontpageState extends State<Frontpage> {
                                   child: ElevatedButton(
                                     onPressed: () =>
                                         goToAlarmPage(alarms[index]),
-                                    child: Text(alarms[index].alarmId),
+                                    child: Text(alarms[index].name),
                                   ),
                                 ),
                               ],

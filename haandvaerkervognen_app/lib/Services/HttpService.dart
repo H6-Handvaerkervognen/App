@@ -109,10 +109,10 @@ class HttpService {
       try {
         setupClient();
         
-        request = await client.getUrl(Uri.parse('$baseUrl/App/GetAlarms'));
+        request = await client.getUrl(Uri.parse('$baseUrl/App/GetAlarms?username=$username'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
-        request.add(utf8.encode(jsonEncode(username)));
+        //request.add(utf8.encode(jsonEncode(username)));
 
         HttpClientResponse response = await request.close();
 
@@ -168,17 +168,18 @@ class HttpService {
   }
 
   ///Save an alarm after some of it's values have been altered
-  Future<bool> updateAlarmInfo(Alarm alarm) async {
+  Future<bool> updateAlarmInfo(String username, Alarm alarm) async {
     String? token = await _tokenService.getToken();
     if (token != null) {
       try {
+        PairInfo info = PairInfo(username: username, alarmInfo: alarm);
         setupClient();
 
         request =
             await client.patchUrl(Uri.parse('$baseUrl/App/UpdateAlarmInfo'));
         request.headers.set('Content-Type', 'application/json; charset=UTF-8');
         request.headers.set('Token', token);
-        request.add(utf8.encode(jsonEncode(alarm.toJson())));
+        request.add(utf8.encode(jsonEncode(info.toJson())));
 
         response = await request.close();
 

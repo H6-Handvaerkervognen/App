@@ -72,6 +72,7 @@ class _AlarmPageState extends State<AlarmPage> {
         MaterialPageRoute(
             builder: (context) => AlarmSettingsPage(
                   alarm: alarm,
+                  username: widget.username,
                   http: widget.http,
                 )));
   }
